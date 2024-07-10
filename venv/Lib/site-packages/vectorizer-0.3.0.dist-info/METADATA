@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: vectorizer
+Version: 0.3.0
+Summary: This package aims to facilitate natural languange processing
+Home-page: http://example.com/mypackage
+Author: Simean Hamado
+Author-email: fatihamtech@gmail.com
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
