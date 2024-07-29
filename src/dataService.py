@@ -14,14 +14,15 @@ model = joblib.load('data/sentiment_model.pkl')
 _, _, _, _, _, _, vectorizer = joblib.load('data/preprocessed_data.pkl')
 
 # 定义发送聊天记录到 Spring Boot 后端的方法
-def send_chat_history_to_springboot(user_id, message):
+def send_chat_history_to_springboot(user_id, userMessage,botMessage):
     if user_id is None:
         raise ValueError("user_id cannot be None")
 
     url = 'http://localhost:8080/chathistories'
     headers = {'Content-Type': 'application/json'}
     chat_message = {
-        'message': message,
+        'userMessage': userMessage,
+        'botMessage': botMessage,
         'timestamp': datetime.now().isoformat(),
         'user_id': user_id
     }
@@ -39,8 +40,8 @@ async def handle_connection(websocket, path):
         async for message in websocket:
             # 解析 JSON 消息
             chat_message = json.loads(message)
-            user_message = chat_message.get('Message', '')
-            user_id = chat_message.get('Id', '')
+            user_message = chat_message.get('UserMessage', '')
+            user_id = chat_message.get('UserId', '')
             print(user_id)
 
             # 处理消息
@@ -53,7 +54,7 @@ async def handle_connection(websocket, path):
             logging.debug("Message processed and sent back")
 
             # 创建并发送聊天记录到 Spring Boot 后端
-            send_chat_history_to_springboot(user_id, user_message)
+            send_chat_history_to_springboot(user_id, user_message, prediction)
 
     except websockets.ConnectionClosed:
         logging.debug("Client disconnected")
