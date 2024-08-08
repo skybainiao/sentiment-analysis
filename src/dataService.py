@@ -38,22 +38,19 @@ async def handle_connection(websocket, path):
     logging.debug("Client connected")
     try:
         async for message in websocket:
-            # 解析 JSON 消息
+
             chat_message = json.loads(message)
             user_message = chat_message.get('UserMessage', '')
             user_id = chat_message.get('UserId', '')
             print(user_id)
 
-            # 处理消息
             new_reviews_vec = vectorizer.transform([user_message])
             prediction = model.predict(new_reviews_vec)[0]
 
-            # 创建响应
             response = json.dumps({'prediction': prediction})
             await websocket.send(response)
             logging.debug("Message processed and sent back")
 
-            # 创建并发送聊天记录到 Spring Boot 后端
             send_chat_history_to_springboot(user_id, user_message, prediction)
 
     except websockets.ConnectionClosed:
